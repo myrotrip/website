@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trippo — Smart Trip Planner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --bg1:#f6fbff; --bg2:#e7fff7;
+      --primary1:#1e90ff; --primary2:#00c9a7;
+      --card:rgba(255,255,255,0.9);
+      --muted:#6b7280; --text:#0f172a;
+      font-family:Inter,-apple-system,"Segoe UI",Roboto,Arial;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;height:100%;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--text);}
+    .wrap{max-width:960px;margin:28px auto;padding:20px;}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .logo{display:flex;align-items:center;gap:10px;}
+    .logo-icon{width:52px;height:52px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #111;box-shadow:0 6px 18px rgba(0,0,0,0.1);}
+    .logo-icon svg{width:38px;height:38px;}
+    .logo-text{font-weight:700;font-size:18px;}
+    .menu-icon{cursor:pointer;padding:10px 14px;border-radius:12px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,0.08);transition:.3s;}
+    .menu-icon:hover{transform:translateY(-3px);}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:20px;}
+    @media(max-width:820px){.grid{grid-template-columns:1fr;}}
+    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.08);}
+    .form-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+    label{flex:0 0 110px;font-weight:600;}
+    input[type="text"],input[type="number"]{flex:1;padding:10px;border-radius:8px;border:1px solid #e6edf3;background:white;}
+    .btn{padding:12px 18px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--primary1),var(--primary2));color:white;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(30,144,255,0.12);}
+    .btn.secondary{background:linear-gradient(90deg,#f59e0b,#f97316);color:#111;}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.85);margin-bottom:8px;}
+    .total{font-size:22px;font-weight:800;}
+    .footer-actions{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;}
+    /* Overlay & Menu */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:1000;transition:opacity .3s ease;}
+    .overlay.show{display:flex;opacity:1;}
+    .menu-box{width:280px;background:rgba(255,255,255,0.6);border-radius:18px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,0.3);backdrop-filter:blur(12px);transform:translateY(20px);opacity:0;transition:transform .35s ease,opacity .35s ease;}
+    .menu-box.show{transform:translateY(0);opacity:1;}
+    .menu-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .menu-close{background:none;border:none;font-size:22px;cursor:pointer;}
+    .menu-item{padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);margin-top:10px;cursor:pointer;transition:.3s;text-align:center;font-weight:600;}
+    .menu-item:hover{transform:translateY(-3px);background:linear-gradient(90deg,var(--primary1),var(--primary2));color:white;}
+    /* Invite popup */
+    .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1100;background:rgba(0,0,0,0.4);backdrop-filter:blur(5px);}
+    .popup.show{display:flex;}
+    .popup-card{background:rgba(255,255,255,0.7);padding:22px;border-radius:14px;text-align:center;backdrop-filter:blur(10px);box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+    .popup-card button{margin-top:10px;width:100%;padding:10px;border-radius:8px;border:none;font-weight:700;cursor:pointer;}
+    .whatsapp{background:linear-gradient(90deg,#25d366,#128c7e);color:white;}
+    footer{text-align:center;margin-top:40px;color:#666;font-size:14px;}
+    footer a{text-decoration:none;color:var(--primary1);font-weight:700;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 44 L18 22 L30 34 L42 16 L58 44 Z" stroke="#000" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <div class="logo-text">Trippo</div>
+      </div>
+      <div class="menu-icon" id="menuBtn">☰</div>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Trip Details</h3>
+        <div class="form-row"><label>From</label><input id="from" type="text" placeholder="Enter starting point"></div>
+        <div class="form-row"><label>To</label><input id="to" type="text" placeholder="Enter destination"></div>
+        <div class="form-row"><label>Distance (km)</label><input id="distance" type="number"></div>
+        <div class="form-row"><label>Mileage</label><input id="mileage" type="number"></div>
+        <div class="form-row"><label>Fuel Price</label><input id="fuelPrice" type="number"></div>
+        <div class="form-row"><label>People</label><input id="people" type="number"></div>
+        <div class="form-row"><label>Days</label><input id="days" type="number"></div>
+        <div class="form-row"><label>Food ₹/day</label><input id="foodCost" type="number"></div>
+        <div class="form-row"><label>Stay ₹/night</label><input id="stayCost" type="number"></div>
+      </div>
+
+      <div class="card summary" id="summaryCard">
+        <div id="summaryContent">
+          <div class="summary-row"><div>Distance</div><div id="outDistance">—</div></div>
+          <div class="summary-row"><div>Fuel Cost</div><div id="outFuelCost">—</div></div>
+          <div class="summary-row"><div>Food</div><div id="outFood">—</div></div>
+          <div class="summary-row"><div>Stay</div><div id="outStay">—</div></div>
+          <div class="summary-row total"><div>Total</div><div>₹ <span id="outTotal">—</span></div></div>
+        </div>
+        <div class="footer-actions">
+          <button id="estimateBtn" class="btn">Show Total</button>
+          <button id="saveBtn" class="btn secondary">Confirm & Save</button>
+        </div>
+        <button id="shareBtn" class="btn" style="width:100%;margin-top:10px;">Share on WhatsApp</button>
+      </div>
+    </div>
+
+    <footer>© 2025 All Rights Reserved | <a href="https://instagram.com/_fayizeeyy" target="_blank">Developer MK</a></footer>
+  </div>
+
+  <!-- Menu Overlay -->
+  <div class="overlay" id="menuOverlay">
+    <div class="menu-box" id="menuBox">
+      <div class="menu-head">
+        <div class="menu-title">Menu</div>
+        <button class="menu-close" id="closeMenu">×</button>
+      </div>
+      <div class="menu-item" id="privacyBtn">Privacy Policy</div>
+      <div class="menu-item" id="inviteBtn">Invite Friend</div>
+      <div class="menu-item" id="contactBtn">Contact</div>
+    </div>
+  </div>
+
+  <script>
+    const el=id=>document.getElementById(id);
+    function formatCurrency(x){return Number(x).toLocaleString('en-IN',{maximumFractionDigits:0});}
+    function calc(){
+      const dist=parseFloat(el('distance').value)||0;
+      const mileage=parseFloat(el('mileage').value)||1;
+      const fuelPrice=parseFloat(el('fuelPrice').value)||0;
+      const people=parseInt(el('people').value)||1;
+      const days=parseInt(el('days').value)||1;
+      const food=parseFloat(el('foodCost').value)||0;
+      const stay=parseFloat(el('stayCost').value)||0;
+      const fuelCost=(dist/mileage)*fuelPrice;
+      const foodCost=food*people*days;
+      const stayCost=stay*(days-1);
+      const total=fuelCost+foodCost+stayCost;
+      el('outDistance').textContent=dist+' km';
+      el('outFuelCost').textContent='₹ '+formatCurrency(fuelCost);
+      el('outFood').textContent='₹ '+formatCurrency(foodCost);
+      el('outStay').textContent='₹ '+formatCurrency(stayCost);
+      el('outTotal').textContent=formatCurrency(total);
+      return{dist,fuelCost,foodCost,stayCost,total};
+    }
+
+    el('estimateBtn').onclick=()=>calc();
+
+    // PDF generation (summary only)
+    el('saveBtn').onclick=()=>{
+      const d=calc();
+      const html=`
+        <h2 style='text-align:center;'>Trip Summary</h2>
+        <p><strong>From:</strong> ${el('from').value}</p>
+        <p><strong>To:</strong> ${el('to').value}</p>
+        <p><strong>Distance:</strong> ${d.dist} km</p>
+        <p><strong>Fuel Cost:</strong> ₹${formatCurrency(d.fuelCost)}</p>
+        <p><strong>Food:</strong> ₹${formatCurrency(d.foodCost)}</p>
+        <p><strong>Stay:</strong> ₹${formatCurrency(d.stayCost)}</p>
+        <h3>Total: ₹${formatCurrency(d.total)}</h3>
+        <h3 style='text-align:center;'>🎉 Happy Journey!</h3>`;
+      const tmp=document.createElement('div');
+      tmp.innerHTML=html;
+      html2pdf().from(tmp).save('Trip_Summary.pdf');
+    };
+
+    // WhatsApp share (summary)
+    el('shareBtn').onclick=()=>{
+      const d=calc();
+      const msg=`Trip Summary%0AFrom: ${el('from').value}%0ATo: ${el('to').value}%0ADistance: ${d.dist} km%0AFuel: ₹${formatCurrency(d.fuelCost)}%0AFood: ₹${formatCurrency(d.foodCost)}%0AStay: ₹${formatCurrency(d.stayCost)}%0ATotal: ₹${formatCurrency(d.total)}%0A🎉 Happy Journey!%0AVisit: https://trippoofficial.github.io/website/`;
+      window.open('https://wa.me/?text='+msg,'_blank');
+    };
+
+    // Menu logic
+    el('menuBtn').onclick=()=>{el('menuOverlay').classList.add('show');setTimeout(()=>el('menuBox').classList.add('show'),50);}
+    el('closeMenu').onclick=()=>{el('menuBox').classList.remove('show');setTimeout(()=>el('menuOverlay').classList.remove('show'),300);}
+
+    // Menu items
+    el('privacyBtn').onclick=()=>alert('Trippo never stores data. All calculations happen locally on your device.');
+    el('inviteBtn').onclick=()=>{
+      const msg=encodeURIComponent("🌍 Plan your perfect trip with Trippo! 🚗 Smart fuel & stay budget planner powered by AI. Try now 👉 https://trippoofficial.github.io/website/ 🎒 Adventure begins here!");
+      window.open('https://wa.me/?text='+msg,'_blank');
+      el('menuOverlay').classList.remove('show');
+    };
+    el('contactBtn').onclick=()=>window.open('https://instagram.com/_fayizeeyy','_blank');
+  </script>
+</body>
+</html>
