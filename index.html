@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trippo — Smart Trip Planner</title>
+  <title>Rotrip — Smart Trip Planner</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
@@ -43,12 +43,6 @@
     .menu-close{background:none;border:none;font-size:22px;cursor:pointer;}
     .menu-item{padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);margin-top:10px;cursor:pointer;transition:.3s;text-align:center;font-weight:600;}
     .menu-item:hover{transform:translateY(-3px);background:linear-gradient(90deg,var(--primary1),var(--primary2));color:white;}
-    /* Invite popup */
-    .popup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1100;background:rgba(0,0,0,0.4);backdrop-filter:blur(5px);}
-    .popup.show{display:flex;}
-    .popup-card{background:rgba(255,255,255,0.7);padding:22px;border-radius:14px;text-align:center;backdrop-filter:blur(10px);box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-    .popup-card button{margin-top:10px;width:100%;padding:10px;border-radius:8px;border:none;font-weight:700;cursor:pointer;}
-    .whatsapp{background:linear-gradient(90deg,#25d366,#128c7e);color:white;}
     footer{text-align:center;margin-top:40px;color:#666;font-size:14px;}
     footer a{text-decoration:none;color:var(--primary1);font-weight:700;}
   </style>
@@ -62,7 +56,7 @@
             <path d="M6 44 L18 22 L30 34 L42 16 L58 44 Z" stroke="#000" stroke-width="2" fill="none"/>
           </svg>
         </div>
-        <div class="logo-text">Trippo</div>
+        <div class="logo-text">Rotrip</div>
       </div>
       <div class="menu-icon" id="menuBtn">☰</div>
     </header>
@@ -159,7 +153,7 @@
     // WhatsApp share (summary)
     el('shareBtn').onclick=()=>{
       const d=calc();
-      const msg=`Trip Summary%0AFrom: ${el('from').value}%0ATo: ${el('to').value}%0ADistance: ${d.dist} km%0AFuel: ₹${formatCurrency(d.fuelCost)}%0AFood: ₹${formatCurrency(d.foodCost)}%0AStay: ₹${formatCurrency(d.stayCost)}%0ATotal: ₹${formatCurrency(d.total)}%0A🎉 Happy Journey!%0AVisit: https://trippoofficial.github.io/website/`;
+      const msg=`Trip Summary%0AFrom: ${el('from').value}%0ATo: ${el('to').value}%0ADistance: ${d.dist} km%0AFuel: ₹${formatCurrency(d.fuelCost)}%0AFood: ₹${formatCurrency(d.foodCost)}%0AStay: ₹${formatCurrency(d.stayCost)}%0ATotal: ₹${formatCurrency(d.total)}%0A🎉 Happy Journey!%0AVisit: https://myrotrip.github.io/website/`;
       window.open('https://wa.me/?text='+msg,'_blank');
     };
 
@@ -168,9 +162,9 @@
     el('closeMenu').onclick=()=>{el('menuBox').classList.remove('show');setTimeout(()=>el('menuOverlay').classList.remove('show'),300);}
 
     // Menu items
-    el('privacyBtn').onclick=()=>alert('Trippo never stores data. All calculations happen locally on your device.');
+    el('privacyBtn').onclick=()=>alert('Rotrip never stores data. All calculations happen locally on your device.');
     el('inviteBtn').onclick=()=>{
-      const msg=encodeURIComponent("🌍 Plan your perfect trip with Trippo! 🚗 Smart fuel & stay budget planner powered by AI. Try now 👉 https://trippoofficial.github.io/website/ 🎒 Adventure begins here!");
+      const msg=encodeURIComponent("🌍 Plan your perfect trip with Rotrip! 🚗 Smart fuel & stay budget planner powered by AI. Try now 👉 https://myrotrip.github.io/website/ 🎒 Adventure begins here!");
       window.open('https://wa.me/?text='+msg,'_blank');
       el('menuOverlay').classList.remove('show');
     };
