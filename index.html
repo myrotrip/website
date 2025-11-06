@@ -23,6 +23,11 @@
     .logo-text{font-weight:700;font-size:18px;}
     .menu-icon{cursor:pointer;padding:10px 14px;border-radius:12px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,0.08);transition:.3s;}
     .menu-icon:hover{transform:translateY(-3px);}
+    nav{display:flex;gap:14px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+    nav a{text-decoration:none;color:var(--text);font-weight:600;padding:8px 14px;border-radius:8px;transition:.3s;}
+    nav a:hover{background:linear-gradient(90deg,var(--primary1),var(--primary2));color:white;}
+    .active{background:linear-gradient(90deg,var(--primary1),var(--primary2));color:white;}
+
     .grid{display:grid;grid-template-columns:1fr 420px;gap:20px;}
     @media(max-width:820px){.grid{grid-template-columns:1fr;}}
     .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.08);}
@@ -54,6 +59,16 @@
     .insta-follow{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border:none;padding:10px 20px;border-radius:30px;font-weight:600;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;transition:transform .2s;}
     .insta-follow img{width:18px;height:18px;}
     .insta-follow:hover{transform:scale(1.05);}
+    .coming-soon{text-align:center;padding:60px 20px;}
+    .coming-soon h2{font-size:1.8em;margin-bottom:10px;}
+    .coming-soon p{color:#666;}
+
+    /* Privacy modal */
+    .privacy-modal{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:3000;}
+    .privacy-box{background:rgba(255,255,255,0.7);backdrop-filter:blur(20px);padding:20px 26px;border-radius:20px;max-width:320px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.2);animation:fadeIn .3s ease;}
+    .privacy-box h3{margin-top:0;color:#1e90ff;}
+    .privacy-close{position:absolute;top:10px;right:16px;font-size:20px;font-weight:600;color:#333;cursor:pointer;}
+    @keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
   </style>
 </head>
 <body>
@@ -76,44 +91,21 @@
     <header>
       <div class="logo" onclick="window.open('https://instagram.com/rotrip.in','_blank')">
         <div class="logo-icon">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 44 L18 22 L30 34 L42 16 L58 44 Z" stroke="#000" stroke-width="2" fill="none"/>
-          </svg>
+          <svg viewBox="0 0 64 64"><path d="M6 44 L18 22 L30 34 L42 16 L58 44 Z" stroke="#000" stroke-width="2" fill="none"/></svg>
         </div>
         <div class="logo-text">Rotrip</div>
       </div>
       <div class="menu-icon" id="menuBtn">☰</div>
     </header>
 
-    <div class="grid">
-      <div class="card">
-        <h3>Trip Details</h3>
-        <div class="form-row"><label>From</label><input id="from" type="text" placeholder="Enter starting point"></div>
-        <div class="form-row"><label>To</label><input id="to" type="text" placeholder="Enter destination"></div>
-        <div class="form-row"><label>Distance (km)</label><input id="distance" type="number"></div>
-        <div class="form-row"><label>Mileage</label><input id="mileage" type="number"></div>
-        <div class="form-row"><label>Fuel Price</label><input id="fuelPrice" type="number"></div>
-        <div class="form-row"><label>People</label><input id="people" type="number"></div>
-        <div class="form-row"><label>Days</label><input id="days" type="number"></div>
-        <div class="form-row"><label>Food ₹/day</label><input id="foodCost" type="number"></div>
-        <div class="form-row"><label>Stay ₹/night</label><input id="stayCost" type="number"></div>
-      </div>
+    <nav>
+      <a href="#" class="active" onclick="showPage('home',this)">Home</a>
+      <a href="#" onclick="showPage('resorts',this)">Resorts</a>
+      <a href="#" onclick="showPage('hotels',this)">Hotels</a>
+      <a href="#" onclick="showPage('rent',this)">Rent Vehicles</a>
+    </nav>
 
-      <div class="card summary" id="summaryCard">
-        <div id="summaryContent">
-          <div class="summary-row"><div>Distance</div><div id="outDistance">—</div></div>
-          <div class="summary-row"><div>Fuel Cost</div><div id="outFuelCost">—</div></div>
-          <div class="summary-row"><div>Food</div><div id="outFood">—</div></div>
-          <div class="summary-row"><div>Stay</div><div id="outStay">—</div></div>
-          <div class="summary-row total"><div>Total</div><div>₹ <span id="outTotal">—</span></div></div>
-        </div>
-        <div class="footer-actions">
-          <button id="estimateBtn" class="btn">Show Total</button>
-          <button id="saveBtn" class="btn secondary">Confirm & Save</button>
-        </div>
-        <button id="shareBtn" class="btn" style="width:100%;margin-top:10px;">Share on WhatsApp</button>
-      </div>
-    </div>
+    <div id="pageContent"></div>
 
     <footer>© 2025 All Rights Reserved | <a href="https://instagram.com/_fayizeeyy" target="_blank">Developer MK</a></footer>
   </div>
@@ -131,73 +123,84 @@
     </div>
   </div>
 
+  <!-- Privacy Glass Modal -->
+  <div class="privacy-modal" id="privacyModal">
+    <div class="privacy-box">
+      <div class="privacy-close" id="closePrivacy">×</div>
+      <h3>Privacy Policy</h3>
+      <p>Rotrip values your privacy. No trip details or user data are stored or shared.  
+      All calculations happen safely on your device 💙.</p>
+    </div>
+  </div>
+
   <script>
     const el=id=>document.getElementById(id);
+
+    document.addEventListener("DOMContentLoaded",()=>showPage('home',document.querySelector('nav a.active')));
+
     function formatCurrency(x){return Number(x).toLocaleString('en-IN',{maximumFractionDigits:0});}
-    function calc(){
-      const dist=parseFloat(el('distance').value)||0;
-      const mileage=parseFloat(el('mileage').value)||1;
-      const fuelPrice=parseFloat(el('fuelPrice').value)||0;
-      const people=parseInt(el('people').value)||1;
-      const days=parseInt(el('days').value)||1;
-      const food=parseFloat(el('foodCost').value)||0;
-      const stay=parseFloat(el('stayCost').value)||0;
-      const fuelCost=(dist/mileage)*fuelPrice;
-      const foodCost=food*people*days;
-      const stayCost=stay*(days-1);
-      const total=fuelCost+foodCost+stayCost;
-      el('outDistance').textContent=dist+' km';
-      el('outFuelCost').textContent='₹ '+formatCurrency(fuelCost);
-      el('outFood').textContent='₹ '+formatCurrency(foodCost);
-      el('outStay').textContent='₹ '+formatCurrency(stayCost);
-      el('outTotal').textContent=formatCurrency(total);
-      return{dist,fuelCost,foodCost,stayCost,total};
+
+    function showPage(page,btn){
+      document.querySelectorAll("nav a").forEach(a=>a.classList.remove("active"));
+      if(btn) btn.classList.add("active");
+      const content=el('pageContent');
+      if(page==='home'){
+        content.innerHTML=`<div class="grid"><div class="card"><h3>Trip Details</h3>
+          <div class="form-row"><label>From</label><input id="from" type="text"></div>
+          <div class="form-row"><label>To</label><input id="to" type="text"></div>
+          <div class="form-row"><label>Distance (km)</label><input id="distance" type="number"></div>
+          <div class="form-row"><label>Mileage</label><input id="mileage" type="number"></div>
+          <div class="form-row"><label>Fuel Price</label><input id="fuelPrice" type="number"></div>
+          <div class="form-row"><label>People</label><input id="people" type="number"></div>
+          <div class="form-row"><label>Days</label><input id="days" type="number"></div>
+          <div class="form-row"><label>Food ₹/day</label><input id="foodCost" type="number"></div>
+          <div class="form-row"><label>Stay ₹/night</label><input id="stayCost" type="number"></div></div>
+          <div class="card summary"><div id="summaryContent">
+          <div class="summary-row"><div>Distance</div><div id="outDistance">—</div></div>
+          <div class="summary-row"><div>Fuel Cost</div><div id="outFuelCost">—</div></div>
+          <div class="summary-row"><div>Food</div><div id="outFood">—</div></div>
+          <div class="summary-row"><div>Stay</div><div id="outStay">—</div></div>
+          <div class="summary-row total"><div>Total</div><div>₹ <span id="outTotal">—</span></div></div></div>
+          <div class="footer-actions"><button id="estimateBtn" class="btn">Show Total</button>
+          <button id="saveBtn" class="btn secondary">Confirm & Save</button></div>
+          <button id="shareBtn" class="btn" style="width:100%;margin-top:10px;">Share on WhatsApp</button></div></div>`;
+        attachHomeEvents();
+      } else {
+        const title=page.charAt(0).toUpperCase()+page.slice(1);
+        content.innerHTML=`<div class='coming-soon'><h2>${title}</h2><p>Coming Soon! Add Your ${title} on Rotrip.</p></div>`;
+      }
     }
 
-    el('estimateBtn').onclick=()=>calc();
-
-    // PDF
-    el('saveBtn').onclick=()=>{
-      const d=calc();
-      const html=`
-        <h2 style='text-align:center;'>Trip Summary</h2>
-        <p><strong>From:</strong> ${el('from').value}</p>
-        <p><strong>To:</strong> ${el('to').value}</p>
-        <p><strong>Distance:</strong> ${d.dist} km</p>
-        <p><strong>Fuel Cost:</strong> ₹${formatCurrency(d.fuelCost)}</p>
-        <p><strong>Food:</strong> ₹${formatCurrency(d.foodCost)}</p>
-        <p><strong>Stay:</strong> ₹${formatCurrency(d.stayCost)}</p>
-        <h3>Total: ₹${formatCurrency(d.total)}</h3>
-        <h3 style='text-align:center;'>🎉 Happy Journey!</h3>`;
-      const tmp=document.createElement('div');
-      tmp.innerHTML=html;
-      html2pdf().from(tmp).save('Trip_Summary.pdf');
-    };
-
-    // WhatsApp share
-    el('shareBtn').onclick=()=>{
-      const d=calc();
-      const msg=`Trip Summary%0AFrom: ${el('from').value}%0ATo: ${el('to').value}%0ADistance: ${d.dist} km%0AFuel: ₹${formatCurrency(d.fuelCost)}%0AFood: ₹${formatCurrency(d.foodCost)}%0AStay: ₹${formatCurrency(d.stayCost)}%0ATotal: ₹${formatCurrency(d.total)}%0A🎉 Happy Journey!%0AVisit: https://myrotrip.github.io/website/`;
-      window.open('https://wa.me/?text='+msg,'_blank');
-    };
+    function attachHomeEvents(){
+      const calc=()=>{
+        const d=parseFloat(el('distance').value)||0, mil=parseFloat(el('mileage').value)||1, f=parseFloat(el('fuelPrice').value)||0,
+        p=parseInt(el('people').value)||1, dy=parseInt(el('days').value)||1, fd=parseFloat(el('foodCost').value)||0, st=parseFloat(el('stayCost').value)||0;
+        const fuel=(d/mil)*f, food=fd*p*dy, stay=st*(dy-1), total=fuel+food+stay;
+        el('outDistance').textContent=d+' km';
+        el('outFuelCost').textContent='₹ '+formatCurrency(fuel);
+        el('outFood').textContent='₹ '+formatCurrency(food);
+        el('outStay').textContent='₹ '+formatCurrency(stay);
+        el('outTotal').textContent=formatCurrency(total);
+        return{d,fuel,food,stay,total};
+      };
+      el('estimateBtn').onclick=()=>calc();
+      el('saveBtn').onclick=()=>{const x=calc();const html=`<h2 style='text-align:center;'>Trip Summary</h2>
+        <p><strong>From:</strong> ${el('from').value}</p><p><strong>To:</strong> ${el('to').value}</p>
+        <p><strong>Distance:</strong> ${x.d} km</p><p><strong>Total:</strong> ₹${formatCurrency(x.total)}</p>`;
+        const tmp=document.createElement('div');tmp.innerHTML=html;html2pdf().from(tmp).save('Trip_Summary.pdf');};
+      el('shareBtn').onclick=()=>{const x=calc();const msg=`Trip Summary%0AFrom: ${el('from').value}%0ATo: ${el('to').value}%0ADistance: ${x.d} km%0ATotal: ₹${formatCurrency(x.total)}%0A🎒 Adventure with Rotrip!%0AVisit: https://myrotrip.github.io/website/`;window.open('https://wa.me/?text='+msg,'_blank');};
+    }
 
     // Menu logic
     el('menuBtn').onclick=()=>{el('menuOverlay').classList.add('show');setTimeout(()=>el('menuBox').classList.add('show'),50);}
     el('closeMenu').onclick=()=>{el('menuBox').classList.remove('show');setTimeout(()=>el('menuOverlay').classList.remove('show'),300);}
-
-    // Menu items
-    el('privacyBtn').onclick=()=>alert('Rotrip never stores data. All calculations happen locally on your device.');
-    el('inviteBtn').onclick=()=>{
-      const msg=encodeURIComponent("🌍 Plan your perfect trip with Rotrip! 🚗 Smart fuel & stay budget planner powered by AI. Try now 👉 https://myrotrip.github.io/website/ 🎒 Adventure begins here!");
-      window.open('https://wa.me/?text='+msg,'_blank');
-      el('menuOverlay').classList.remove('show');
-    };
+    el('privacyBtn').onclick=()=>{el('privacyModal').style.display='flex';}
+    el('closePrivacy').onclick=()=>{el('privacyModal').style.display='none';}
+    el('inviteBtn').onclick=()=>{const msg=encodeURIComponent("🌍 Plan your perfect trip with Rotrip! 🚗 Smart fuel & stay budget planner powered by AI. Try now 👉 https://myrotrip.github.io/website/ 🎒 Adventure begins here!");window.open('https://wa.me/?text='+msg,'_blank');el('menuOverlay').classList.remove('show');}
     el('contactBtn').onclick=()=>window.open('https://instagram.com/_fayizeeyy','_blank');
 
-    // Welcome popup
     el('closeWelcome').onclick=()=>el('welcome').style.display='none';
     el('continueBtn').onclick=()=>el('welcome').style.display='none';
   </script>
 </body>
 </html>
-
