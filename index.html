@@ -17,7 +17,7 @@
     html,body{margin:0;height:100%;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--text);}
     .wrap{max-width:960px;margin:28px auto;padding:20px;}
     header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-    .logo{display:flex;align-items:center;gap:10px;}
+    .logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
     .logo-icon{width:52px;height:52px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #111;box-shadow:0 6px 18px rgba(0,0,0,0.1);}
     .logo-icon svg{width:38px;height:38px;}
     .logo-text{font-weight:700;font-size:18px;}
@@ -34,7 +34,10 @@
     .summary-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.85);margin-bottom:8px;}
     .total{font-size:22px;font-weight:800;}
     .footer-actions{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;}
-    /* Overlay & Menu */
+    footer{text-align:center;margin-top:40px;color:#666;font-size:14px;}
+    footer a{text-decoration:none;color:var(--primary1);font-weight:700;}
+
+    /* Menu overlay */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:1000;transition:opacity .3s ease;}
     .overlay.show{display:flex;opacity:1;}
     .menu-box{width:280px;background:rgba(255,255,255,0.6);border-radius:18px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,0.3);backdrop-filter:blur(12px);transform:translateY(20px);opacity:0;transition:transform .35s ease,opacity .35s ease;}
@@ -43,14 +46,35 @@
     .menu-close{background:none;border:none;font-size:22px;cursor:pointer;}
     .menu-item{padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);margin-top:10px;cursor:pointer;transition:.3s;text-align:center;font-weight:600;}
     .menu-item:hover{transform:translateY(-3px);background:linear-gradient(90deg,var(--primary1),var(--primary2));color:white;}
-    footer{text-align:center;margin-top:40px;color:#666;font-size:14px;}
-    footer a{text-decoration:none;color:var(--primary1);font-weight:700;}
+
+    /* Welcome popup */
+    .welcome{position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:2000;}
+    .welcome-box{background:rgba(255,255,255,0.9);padding:26px;border-radius:20px;text-align:center;max-width:320px;box-shadow:0 12px 40px rgba(0,0,0,0.2);}
+    .close-welcome{position:absolute;top:18px;right:22px;font-size:22px;cursor:pointer;color:#333;}
+    .insta-follow{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border:none;padding:10px 20px;border-radius:30px;font-weight:600;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;transition:transform .2s;}
+    .insta-follow img{width:18px;height:18px;}
+    .insta-follow:hover{transform:scale(1.05);}
   </style>
 </head>
 <body>
+  <!-- Welcome Popup -->
+  <div class="welcome" id="welcome">
+    <div class="welcome-box">
+      <div class="close-welcome" id="closeWelcome">×</div>
+      <h2>Welcome to <span style="color:#1e90ff;">Rotrip</span> 🌍</h2>
+      <p>Follow us for travel vibes & updates!</p>
+      <button class="insta-follow" onclick="window.open('https://instagram.com/rotrip.in','_blank')">
+        <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Insta">
+        Follow on Instagram
+      </button>
+      <br><br>
+      <button id="continueBtn" class="btn">Continue</button>
+    </div>
+  </div>
+
   <div class="wrap">
     <header>
-      <div class="logo">
+      <div class="logo" onclick="window.open('https://instagram.com/rotrip.in','_blank')">
         <div class="logo-icon">
           <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 44 L18 22 L30 34 L42 16 L58 44 Z" stroke="#000" stroke-width="2" fill="none"/>
@@ -132,7 +156,7 @@
 
     el('estimateBtn').onclick=()=>calc();
 
-    // PDF generation (summary only)
+    // PDF
     el('saveBtn').onclick=()=>{
       const d=calc();
       const html=`
@@ -150,7 +174,7 @@
       html2pdf().from(tmp).save('Trip_Summary.pdf');
     };
 
-    // WhatsApp share (summary)
+    // WhatsApp share
     el('shareBtn').onclick=()=>{
       const d=calc();
       const msg=`Trip Summary%0AFrom: ${el('from').value}%0ATo: ${el('to').value}%0ADistance: ${d.dist} km%0AFuel: ₹${formatCurrency(d.fuelCost)}%0AFood: ₹${formatCurrency(d.foodCost)}%0AStay: ₹${formatCurrency(d.stayCost)}%0ATotal: ₹${formatCurrency(d.total)}%0A🎉 Happy Journey!%0AVisit: https://myrotrip.github.io/website/`;
@@ -168,7 +192,11 @@
       window.open('https://wa.me/?text='+msg,'_blank');
       el('menuOverlay').classList.remove('show');
     };
-    el('contactBtn').onclick=()=>window.open('https://instagram.com/_fayizeeyy','_blank');
+    el('contactBtn').onclick=()=>window.open('https://instagram.com/rotrip.in','_blank');
+
+    // Welcome popup
+    el('closeWelcome').onclick=()=>el('welcome').style.display='none';
+    el('continueBtn').onclick=()=>el('welcome').style.display='none';
   </script>
 </body>
 </html>
